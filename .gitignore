@@ -1,0 +1,4 @@
+# tsplib files
+*.gz
+# python cache
+__pycache__
