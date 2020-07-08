@@ -1,14 +1,21 @@
 <h1 align="center">算法设计与分析课设</h1>
 
-## 介绍
+[TOC]
+
+## 仓库介绍
 
 这是一份算法设计与分析课设的模板，目前实现了：
 
 + `tsplib`文件数据的读取
 + 节点类的初始化
 + 算法基类的初始化
++ 图像的绘制
 
-## 结构
+## 使用截图
+
+![用nearest算法解d198](https://allwens-work.oss-cn-beijing.aliyuncs.com/bed/image_2020-07-08_12-27-23.png)
+
+## 目录结构
 
 ```python
 .
@@ -25,7 +32,7 @@
     └── io.py # 读取tsplib数据集
 ```
 
-## 详情
+## 实现原理
 
 1. 读取`tsplib`文件数据
 
@@ -82,5 +89,49 @@
                self.nodes[j].edges.append([distance, i])
    ```
 
-   
+4. 图像的绘制
 
+   使用`tkinter`实现`window`类，固定窗口大小为`1000x600`，通过获取所有点的最大横坐标和最大纵坐标获取比例尺，确保不出现显示越界/太小的情况。
+
+## 注意事项（重要）
+
+**虽然在模板中已经完成了大部分工作，使得用户可以直接进行算法的编写，但还是需要注意以下问题：**
+
+1. 在`main.py`中调用函数时，需要注意算法类接受的参数有两个，分别为`io.getData(filename.tsp.gz)`和`filename`。
+
+    如需遍历所有数据集，可以写成这样：
+
+    ```python
+    files = os.listdir('lib')
+    for file in files:
+        test = nearest_neighbor.nearest_neighbor(
+            io.getData(file), file.split('.')[0])
+        test.operate()
+    ```
+
+    当然如果你不在意窗口中问题名显示拓展名的话，也可以直接使用
+
+    ```python
+        test = nearest_neighbor.nearest_neighbor(
+            io.getData(file), file)
+    ```
+
+2. 自行实现算法时，为正常显示图像，需要手动调用：
+
+    + `self.window.setTitle(algo name)`
+
+      将标题设置为算法名，推荐写在`def __init__()`中。
+
+    + `self.window.drawEdge(x1,y1,x2,y2)`
+
+      用于连线，在选择路径的同时调用。
+
+    + `self.window.setDistance(self.distance)`
+
+      用于在窗口中显示总距离，需写在算法结束得到距离结果后。
+
+    + `self.window.show()`
+
+      用于显示窗口，需写在`setDistance`函数后（推荐写在最后一行）。
+
+    具体使用方法可以参考算法模板`algo/nearest_neighbor.py`。
