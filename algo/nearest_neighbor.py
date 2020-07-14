@@ -11,7 +11,9 @@ class nearest_neighbor(base.base):
         self.beginNum = random.randint(0, self.length-1)
         # 保存当前节点
         self.currentNode = self.nodes[self.beginNum]
-        # 当前节点设为已访问
+        # 保存当前编号
+        self.currentNum = self.beginNum
+        # 起点设为已访问
         self.currentNode.isVisited = True
         # 设置标题（算法名）
         self.window.setTitle('nearest_neighbor')
@@ -29,11 +31,10 @@ class nearest_neighbor(base.base):
             # 得到最小距离与最小距离对应的终点
             minDistance = float('inf')
             end = -1
-            for item in self.currentNode.edges:
-                if not self.nodes[item[1]].isVisited:
-                    if item[0] < minDistance:
-                        minDistance = item[0]
-                        end = item[1]
+            for index in range(len(self.nodes)):
+                if self.edges[self.currentNum][index] < minDistance and not self.nodes[index].isVisited:
+                    minDistance = self.edges[self.currentNum][index]
+                    end = index
             # 总路径增加
             self.distance += minDistance
             # 绘制边
@@ -41,12 +42,12 @@ class nearest_neighbor(base.base):
                 self.currentNode.x, self.currentNode.y, self.nodes[end].x, self.nodes[end].y)
             # 当前点变更为最小距离的终点
             self.currentNode = self.nodes[end]
+            # 当前编号变为最小距离终点的编号
+            self.currentNum = end
+            # 标记当前点已经访问
             self.currentNode.isVisited = True
         # 访问完全后回到起点,总距离需要加上回到起点的距离
-        for item in self.currentNode.edges:
-            if item[1] == self.beginNum:
-                self.distance += item[0]
-                break
+        self.distance += self.edges[self.currentNum][self.beginNum]
         # 增加回到原点的边
         self.window.drawEdge(self.currentNode.x, self.currentNode.y,
                              self.nodes[self.beginNum].x, self.nodes[self.beginNum].y)

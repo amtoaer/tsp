@@ -17,8 +17,6 @@ class node:
         # 处理科学计数法
         self.x = int(x) if x.isdigit() else float(x)
         self.y = int(y) if y.isdigit() else float(y)
-        # 边集，格式为[距离,终点]
-        self.edges = []
         # 是否被访问
         self.isVisited = False
 
@@ -129,6 +127,8 @@ class base:
         for item in self.nodes:
             self.window.drawDot(item.x, item.y)
         self.length = len(self.nodes)
+        # len(self.nodes)*len(self.nodes)邻接矩阵
+        self.edges = [[0]*len(self.nodes) for i in range(len(self.nodes))]
         # 计算距离
         self.__getDistance()
         # 路径总距离初始化为0
@@ -141,5 +141,5 @@ class base:
             for j in range(i):
                 distance = math.sqrt(
                     pow(self.nodes[i].x-self.nodes[j].x, 2)+pow(self.nodes[i].y-self.nodes[j].y, 2))
-                self.nodes[i].edges.append([distance, j])
-                self.nodes[j].edges.append([distance, i])
+                self.edges[i][j] = distance
+                self.edges[j][i] = distance
