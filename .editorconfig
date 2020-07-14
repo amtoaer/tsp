@@ -1,0 +1,12 @@
+root = true
+[*.py]
+# 统一使用utf-8
+charset = utf-8
+# 行尾序列为lf
+end_of_line = lf
+# 结尾插入空白行
+insert_final_newline = true
+# 使用空格缩进
+indent_style = space
+# 宽度为4
+indent_size = 4
