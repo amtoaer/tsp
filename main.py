@@ -1,18 +1,15 @@
-from utils import io
+from utils import io, base
 from algo import nearest_neighbor, greedy, opt, GA
 from os import listdir
-
 
 
 def main():
     files = listdir('lib')
     for file in files:
+        window = base.window(file.split('.')[0])
         nearest_neighbor.nearest_neighbor(
-            io.getData(file), file.split('.')[0]).operate()
-        greedy.greedy(io.getData(file), file.split('.')[0]).operate()
-        opt.opt(io.getData(file), file.split('.')[0]).opt2()
-        GA.GA(io.getData(file), file.split('.')[0]).find_best_path()
-
+            io.getData(file), window.axes[0, 0]).operate()
+        window.show()
 
 
 if __name__ == '__main__':
