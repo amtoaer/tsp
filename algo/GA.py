@@ -151,7 +151,7 @@ class GA(base.base):
             if fitness[i] < aver_fitness:
                 pc=pc_max
             else:
-                pc=pc_max-(pc_max-self.PC_MIN)*(g/(2*self.GENERATE_TIME) + (fitness[i]-aver_fitness)/(2*(max_fitness-aver_fitness)))
+                pc=pc_max-(pc_max-self.PC_MIN)*(g/(2*self.GENERATE_TIME) + (fitness[i]-aver_fitness)/(2*(max_fitness-0.95*aver_fitness)))
             if random.random() < pc:
                 select_parents.append(self.POPULATION[i])
             else:
