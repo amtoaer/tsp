@@ -13,18 +13,19 @@ class nearest_neighbor(base.base):
         self.currentNode = self.nodes[self.beginNum]
         # 保存当前编号
         self.currentNum = self.beginNum
+        self.setTitle('nearest neighbor')
 
     def operate(self):
-        isVisited = [False]*len(self.nodes)
+        isVisited = [False]*self.length
         x = []
         y = []
         x.append(self.currentNode.x)
         y.append(self.currentNode.y)
-        while not len(x) == len(self.nodes)+1:
+        while not len(x) == self.length+1:
             # 得到最小距离与最小距离对应的终点
             minDistance = float('inf')
             end = -1
-            for index in range(len(self.nodes)):
+            for index in range(self.length):
                 if self.edges[self.currentNum][index] < minDistance and not isVisited[index]:
                     minDistance = self.edges[self.currentNum][index]
                     end = index

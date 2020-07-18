@@ -9,6 +9,9 @@ def main():
         window = base.window(file.split('.')[0])
         nearest_neighbor.nearest_neighbor(
             io.getData(file), window.axes[0, 0]).operate()
+        greedy.greedy(io.getData(file), window.axes[0, 1]).operate()
+        opt.opt(io.getData(file), window.axes[1, 0]).opt2()
+        GA.GA(io.getData(file), window.axes[1, 1]).find_best_path()
         window.show()
 
 

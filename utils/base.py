@@ -66,6 +66,8 @@ class base:
         self.__getDistance()
         # 路径总距离初始化为0
         self.distance = 0
+        # 点个数
+        self.length = len(self.nodes)
 
     def __getDistance(self):
         for i in range(len(self.nodes)):
@@ -88,3 +90,6 @@ class base:
 
     def drawEdge(self, x1, y1, x2, y2):
         self.subplot.plot([x1, x2], [y1, y2])
+
+    def setTitle(self, title):
+        self.subplot.set_title(title)
