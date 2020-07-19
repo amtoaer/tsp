@@ -13,9 +13,9 @@ class nearest_neighbor(base.base):
         self.currentNode = self.nodes[self.beginNum]
         # 保存当前编号
         self.currentNum = self.beginNum
-        self.setTitle('nearest neighbor')
 
     def operate(self):
+        before = self.getTime()
         isVisited = [False]*self.length
         x = []
         y = []
@@ -45,4 +45,6 @@ class nearest_neighbor(base.base):
         # 增加回到原点的边
         x.append(self.nodes[self.beginNum].x)
         y.append(self.nodes[self.beginNum].y)
-        self.drawEdges(x, y)
+        self.drawEdges(x, y, 'green')
+        self.time = self.getTime()-before
+        self.setText('nearest neighbor', self.time, self.distance)

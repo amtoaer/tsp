@@ -7,8 +7,6 @@ class opt(base.base):
     def __init__(self, nodeList, questionName):
         # 调用父类初始化函数
         super().__init__(nodeList, questionName)
-        # 设置标题（算法名）
-        self.setTitle('2-opt')
         # 设置算法停止参数
         self.max_count = 1000
         # 随机选择一条路作为初始路径
@@ -66,14 +64,16 @@ class opt(base.base):
         return path
 
     def opt2(self):  # 2-opt求最优路径
+        before = self.getTime()
         self.update_beat_path()
+        self.time = self.getTime()-before
         # print("最优路径:", self.path)
-        # self.window.setDistance(self.get_distance(self.path))
         for i in range(len(self.path)-1):
             node1 = self.nodes[self.path[i]]
             node2 = self.nodes[self.path[i+1]]
-            self.drawEdge(node1.x, node1.y, node2.x, node2.y)
+            self.drawEdge(node1.x, node1.y, node2.x, node2.y, 'orange')
         if len(self.path) > 2:
             node1 = self.nodes[self.path[0]]
             node2 = self.nodes[self.path[len(self.path)-1]]
-            self.drawEdge(node1.x, node1.y, node2.x, node2.y)
+            self.drawEdge(node1.x, node1.y, node2.x, node2.y, 'orange')
+        self.setText('2-opt', self.time, self.get_distance(self.path))

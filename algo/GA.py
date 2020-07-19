@@ -7,8 +7,6 @@ class GA(base.base):
     def __init__(self, nodeList, subplot):
         # 调用父类初始化函数
         super().__init__(nodeList, subplot)
-        # 设置标题（算法名）
-        self.setTitle('GA')
         # 种群数量
         self.POP_NUM = 30
         # 迭代次数
@@ -268,22 +266,24 @@ class GA(base.base):
 
     # 显示最优路径
     def show_beat_path(self, path):
-        # self.window.setDistance(self.get_distance(path))
+        self.setText('GA', self.time, self.get_distance(path))
         for i in range(len(path)-1):
             node1 = self.nodes[path[i]]
             node2 = self.nodes[path[i+1]]
-            self.drawEdge(node1.x, node1.y, node2.x, node2.y)
+            self.drawEdge(node1.x, node1.y, node2.x, node2.y, 'red')
         if len(path) > 1:
             node1 = self.nodes[path[0]]
             node2 = self.nodes[path[len(path)-1]]
-            self.drawEdge(node1.x, node1.y, node2.x, node2.y)
+            self.drawEdge(node1.x, node1.y, node2.x, node2.y, 'red')
 
     # 找近似最优路径
     def find_best_path(self):
+        before = self.getTime()
         self.init_pop()
         for i in range(self.GENERATE_TIME):
             self.select()
             self.crossover(i)
             self.mutationover(i)
         best_path, best_p = self.get_best_individual(self.POPULATION)
+        self.time = self.getTime()-before
         self.show_beat_path(best_path)

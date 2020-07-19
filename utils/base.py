@@ -1,5 +1,6 @@
 import math
 import matplotlib.pyplot as plt
+import time
 
 
 class node:
@@ -28,18 +29,13 @@ class window:
         self.fig = plt.figure(figsize=(10, 6), clear=True)
         self.fig.canvas.set_window_title(title)
         self.axes = self.fig.subplots(2, 2)
-        # 隐藏坐标轴
-        # for i in range(2):
-        #    for j in range(2):
-        #        self.axes[i, j].xaxis.set_visible(False)
-        #        self.axes[i, j].yaxis.set_visible(False)
 
     def show(self):
         '''
         完成绘图
         '''
         # plt.tight_layout(pad=1.08)
-        # plt.subplots_adjust(wspace=0, hspace=0)
+        plt.subplots_adjust(hspace=0.4)
         plt.show()
 
 
@@ -68,6 +64,8 @@ class base:
         self.distance = 0
         # 点个数
         self.length = len(self.nodes)
+        # 运行时间
+        self.time = 0
 
     def __getDistance(self):
         for i in range(len(self.nodes)):
@@ -85,11 +83,19 @@ class base:
             y.append(node.y)
         self.subplot.scatter(x, y, color='b', s=0.5)
 
-    def drawEdges(self, x: list, y: list):
-        self.subplot.plot(x, y)
+    def drawEdges(self, x: list, y: list, color: str):
+        self.subplot.plot(x, y, color=color)
 
-    def drawEdge(self, x1, y1, x2, y2):
-        self.subplot.plot([x1, x2], [y1, y2])
+    def drawEdge(self, x1, y1, x2, y2, color: str):
+        self.subplot.plot([x1, x2], [y1, y2], color=color)
 
-    def setTitle(self, title):
-        self.subplot.set_title(title)
+    def setText(self, title, time, distance):
+        # 距离取整
+        distance = round(distance)
+        # 时间保留两位小数
+        time = round(time, 2)
+        tmpStr = '{}\ntime:{}s distance:{}'.format(title, time, distance)
+        self.subplot.set_title(tmpStr)
+
+    def getTime(self):
+        return time.time()
