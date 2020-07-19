@@ -1,9 +1,6 @@
 <h1 align="center">算法设计与分析课设</h1>
 
-> 当前主要问题：
->
-> + 算法类与窗口类耦合度过高，如果想单独统计运行时间需要手动拆分。（因为算法数量并不多，目前没有修改结构的打算）
-> + 采用邻接表方法存储，找到全图最短边代价过大。（预计改用邻接矩阵）
+> 初版使用`tkinter`为每个问题的每个算法绘图。后听从老师建议，使用`matplotlib`重构了绘图模块，将同一问题的多个算法绘制在同一个窗口，便于对比分析。
 
 ## 仓库介绍
 
@@ -16,7 +13,7 @@
 
 ## 使用截图
 
-![用nearest算法解d198](https://allwens-work.oss-cn-beijing.aliyuncs.com/bed/image_2020-07-08_12-27-23.png)
+![image-20200719130312884](https://allwens-work.oss-cn-beijing.aliyuncs.com/bed/image-20200719130312884.png)
 
 ## 目录结构
 
@@ -50,18 +47,16 @@
    + 编号
    + 横坐标
    + 纵坐标
-   + 边集合
-   + 访问标记
-
+   
    其中需要注意的是坐标的读取，因为有少数几组`tsplib`数据的坐标是以科学计数法形式给出的，所以该处需要单独处理。
 
    查阅资料得知科学计数法的字符串可以通过`float(str)`转换为浮点数，故实现如下：
 
    ```python
-   self.x = int(x) if x.isdigit() else float(x)
+self.x = int(x) if x.isdigit() else float(x)
    self.y = int(y) if y.isdigit() else float(y)
    ```
-
+   
 3. 算法基类的初始化
 
    考虑将算法中读取`tsplib`数据的部分分离，作为算法基类，主要需要实现点集的添加和距离的计算。
@@ -82,59 +77,76 @@
    > ![image-20200707232942086](https://allwens-work.oss-cn-beijing.aliyuncs.com/bed/image-20200707232942086.png)
 
    ```python
-   def getDistance(self):
-       self.length = len(self.nodes)
-       for i in range(self.length):
+   def __getDistance(self):
+       for i in range(len(self.nodes)):
            for j in range(i):
                distance = math.sqrt(
                    pow(self.nodes[i].x-self.nodes[j].x, 2)+pow(self.nodes[i].y-self.nodes[j].y, 2))
-               self.nodes[i].edges.append([distance, j])
-               self.nodes[j].edges.append([distance, i])
+               self.edges[i][j] = distance
+               self.edges[j][i] = distance
    ```
+
+   最后封装了部分绘图函数，用于给子视图进行绘图。
 
 4. 图像的绘制
 
-   使用`tkinter`实现`window`类，固定窗口大小为`1000x600`，通过获取所有点的最大横坐标和最大纵坐标获取比例尺，确保不出现显示越界/太小的情况。
+   使用`matplotlib`实现`window`类并拆分四个子视图。在主函数中调用时，将四个视图分别作为参数传递给四个算法，算法内部完成绘制，最后通过`window.show()`函数完成图像展示。
+
+   ```python
+   def main():
+       files = listdir('lib')
+       for file in files:
+           window = base.window(file.split('.')[0])
+           nearest_neighbor.nearest_neighbor(
+               io.getData(file), window.axes[0, 0]).operate()
+           greedy.greedy(io.getData(file), window.axes[0, 1]).operate()
+           opt.opt(io.getData(file), window.axes[1, 0]).opt2()
+           GA.GA(io.getData(file), window.axes[1, 1]).find_best_path()
+           window.show()
+   ```
+
+   
 
 ## 注意事项（重要）
 
 **虽然在模板中已经完成了大部分工作，使得用户可以直接进行算法的编写，但还是需要注意以下问题：**
 
-1. 在`main.py`中调用函数时，需要注意算法类接受的参数有两个，分别为`io.getData(filename.tsp.gz)`和`filename`。
++ 算法运行时间的统计
 
-    如需遍历所有数据集，可以写成这样：
+  算法运行时间通常通过算法运行前后的时间差得到，举例如下：
+
+  ```python
+  before = self.getTime()
+  # 算法开始
+  # ......
+  # 算法结束
+  self.time = self.getTime() - before
+  ```
+
++ 需要手动调用的函数
+
+  + `self.setText(title, time, distance)`
+
+    其中`title`为子图名称，`time`为运行时间，`distance`为总距离，往往在算法最后调用。通常的调用方法为：
 
     ```python
-    files = os.listdir('lib')
-    for file in files:
-        test = nearest_neighbor.nearest_neighbor(
-            io.getData(file), file.split('.')[0])
-        test.operate()
+    self.setText('算法名', self.time, self.distance)
     ```
 
-    当然如果你不在意窗口中问题名显示拓展名的话，也可以直接使用
+  + `self.drawEdges(x: list, y: list, color: str)`或`self.drawEdge(x1, y1, x2, y2, color: str)`
+
+    其中`drawEdges`用于连接连续多个点，举例：
 
     ```python
-        test = nearest_neighbor.nearest_neighbor(
-            io.getData(file), file)
+    # 使用红色线条依次连接(1,1)-(2,4)-(3,9)-(1,1)
+    self.drawEdges([1,2,3,1],[1,4,9,1],'red')
     ```
 
-2. 自行实现算法时，为正常显示图像，需要手动调用：
+    而`drawEdge`用于连接两个点，举例：
 
-    + `self.window.setTitle(algo name)`
+    ```python
+    # 使用绿色线条连接(1,1)-(2,4)
+    self.drawEdge(1,1,2,4,'green')
+    ```
 
-      将标题设置为算法名，推荐写在`def __init__()`中。
-
-    + `self.window.drawEdge(x1,y1,x2,y2)`
-
-      用于连线，在选择路径的同时调用。
-
-    + `self.window.setDistance(self.distance)`
-
-      用于在窗口中显示总距离，需写在算法结束得到距离结果后。
-
-    + `self.window.show()`
-
-      用于显示窗口，需写在`setDistance`函数后（推荐写在最后一行）。
-
-    具体使用方法可以参考算法模板`algo/nearest_neighbor.py`。
+    通常情况下，只有完全按照行走路线求解的算法（如`nearest neighbor`）才能够使用`drawEdges()`，其他算法应使用`drawEdge()`。
