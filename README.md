@@ -13,7 +13,7 @@
 
 ## 使用截图
 
-![image-20200719130312884](https://allwens-work.oss-cn-beijing.aliyuncs.com/bed/image-20200719130312884.png)
+![image-20200719130312884](https://raw.githubusercontent.com/amtoaer/images/master/others/image-20200719130312884.png)
 
 ## 目录结构
 
@@ -47,16 +47,16 @@
    + 编号
    + 横坐标
    + 纵坐标
-   
+
    其中需要注意的是坐标的读取，因为有少数几组`tsplib`数据的坐标是以科学计数法形式给出的，所以该处需要单独处理。
 
    查阅资料得知科学计数法的字符串可以通过`float(str)`转换为浮点数，故实现如下：
 
    ```python
-self.x = int(x) if x.isdigit() else float(x)
+   self.x = int(x) if x.isdigit() else float(x)
    self.y = int(y) if y.isdigit() else float(y)
    ```
-   
+
 3. 算法基类的初始化
 
    考虑将算法中读取`tsplib`数据的部分分离，作为算法基类，主要需要实现点集的添加和距离的计算。
