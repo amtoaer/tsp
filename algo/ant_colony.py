@@ -10,7 +10,8 @@ BETA:Beta值越大，蚁群越就容易选择局部较短路径，这时算法�
      加快，但是随机性不高，容易得到局部的相对最优
 '''
 (ALPHA, BETA, RHO, Q) = (1.0, 2.0, 0.5, 100.0)
-ant_num = 70
+# 蚂蚁数量
+ant_num = 50
 # 城市数量、城市距离和信息素(全局变量)
 city_num = 0
 distance_graph = 0
@@ -127,7 +128,7 @@ class ant_colony(base.base):
         # 初始化信息素
         pheromone_graph = [[1.0]*self.length for _ in range(self.length)]
         # 迭代次数
-        self.iter = 50
+        self.iter = 30
         # 初始化ant_num只蚂蚁
         self.ants = [Ant(ID) for ID in range(ant_num)]
         # 初始最优解
