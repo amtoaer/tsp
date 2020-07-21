@@ -28,7 +28,13 @@ class window:
     def __init__(self, title):
         self.fig = plt.figure(figsize=(10, 6), clear=True)
         self.fig.canvas.set_window_title(title)
-        self.axes = self.fig.subplots(2, 2)
+        # self.axes = self.fig.subplots(2, 2)
+        # 子图布局
+        self.plot1 = self.fig.add_subplot(2, 3, 1)
+        self.plot2 = self.fig.add_subplot(2, 3, 2)
+        self.plot3 = self.fig.add_subplot(2, 3, 3)
+        self.plot4 = self.fig.add_subplot(2, 2, 3)
+        self.plot5 = self.fig.add_subplot(2, 2, 4)
 
     def show(self):
         '''
