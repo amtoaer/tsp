@@ -99,3 +99,6 @@ class base:
 
     def getTime(self):
         return time.time()
+
+    def getResult(self):
+        return [self.distance, self.time]

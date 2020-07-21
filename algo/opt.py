@@ -67,6 +67,7 @@ class opt(base.base):
         before = self.getTime()
         self.update_beat_path()
         self.time = self.getTime()-before
+        self.distance = self.get_distance(self.path)
         # print("最优路径:", self.path)
         for i in range(len(self.path)-1):
             node1 = self.nodes[self.path[i]]
@@ -76,4 +77,4 @@ class opt(base.base):
             node1 = self.nodes[self.path[0]]
             node2 = self.nodes[self.path[len(self.path)-1]]
             self.drawEdge(node1.x, node1.y, node2.x, node2.y, 'orange')
-        self.setText('2-opt', self.time, self.get_distance(self.path))
+        self.setText('2-opt', self.time, self.distance)

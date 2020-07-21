@@ -266,7 +266,8 @@ class GA(base.base):
 
     # 显示最优路径
     def show_beat_path(self, path):
-        self.setText('GA', self.time, self.get_distance(path))
+        self.distance = self.get_distance(path)
+        self.setText('GA', self.time, self.distance)
         for i in range(len(path)-1):
             node1 = self.nodes[path[i]]
             node2 = self.nodes[path[i+1]]
