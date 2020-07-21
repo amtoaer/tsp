@@ -45,7 +45,7 @@ def main():
         col = 2
         for index in range(len(data)):
             if index % 2:
-                ws.write(row, col+4, data[index])
+                ws.write(row, col+5, data[index])
                 col += 1
             else:
                 ws.write(row, col, data[index])
