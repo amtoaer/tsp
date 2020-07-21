@@ -1,5 +1,5 @@
 from utils import io, base
-from algo import nearest_neighbor, greedy, opt, GA
+from algo import nearest_neighbor, greedy, opt, GA, ant_colony
 from os import listdir, path
 from shutil import copyfile
 from xlutils.copy import copy
@@ -35,9 +35,12 @@ def main():
         op = opt.opt(io.getData(file), window.axes[1, 0])
         op.opt2()
         data += op.getResult()
-        ga = GA.GA(io.getData(file), window.axes[1, 1])
-        ga.find_best_path()
-        data += ga.getResult()
+        #ga = GA.GA(io.getData(file), window.axes[1, 1])
+        # ga.find_best_path()
+        #data += ga.getResult()
+        an = ant_colony.ant_colony(io.getData(file), window.axes[1, 1])
+        an.search_path()
+        data += an.getResult()
         # 填excel表
         col = 2
         for index in range(len(data)):
@@ -48,7 +51,7 @@ def main():
                 ws.write(row, col, data[index])
         row += 1
         data.clear()
-        # window.show()
+        window.show()
     # 保存excel文件
     wb.save(path.join('result', 'result.xls'))
 
