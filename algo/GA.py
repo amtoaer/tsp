@@ -35,22 +35,158 @@ class GA(base.base):
                     nearest_dis = self.edges[i][n]
         return nearest_p
 
+    # 最近邻算法,返回一条近似路径
+    def nearest_neighbor_path(self):
+        path = []
+        # 随机初始化开始节点
+        cur_point = random.randint(0, self.length - 1)
+        path.append(cur_point)
+        index = 1
+        # 访问标记
+        visit = [0 for m in range(self.length)]
+        visit[cur_point] = 1
+        while index < self.length:
+            next_p = self.get_nearest_neighbor(cur_point, visit)
+            path.append(next_p)
+            cur_point = next_p
+            visit[next_p] = 1
+            index += 1
+        return path
+
+    # 比较交换前后距离，获得片段两旁节点与片段之间的前后距离
+    def compare_dis(self, i, j, path):
+        if i > 0 and j < len(path) - 1:
+            dis1 = self.edges[path[i - 1]][path[i]
+                   ] + self.edges[path[j]][path[j + 1]]
+            dis2 = self.edges[path[i - 1]][path[j]
+                   ] + self.edges[path[i]][path[j + 1]]
+        elif i == 0 and j < len(path) - 1:
+            dis1 = self.edges[path[0]][path[self.length-1]] + self.edges[path[j]][path[j + 1]]
+            dis2 = self.edges[path[j]][path[self.length-1]] + self.edges[path[i]][path[j + 1]]
+        elif j == len(path) - 1 and i > 0:
+            dis1 = self.edges[path[i - 1]][path[i]] + self.edges[path[j]][path[0]]
+            dis2 = self.edges[path[i - 1]][path[j]] + self.edges[path[i]][path[0]]
+        else:
+            dis1 = dis2 = 0
+        return dis1, dis2
+
+    # 采用2近似算法获得初始路径
+    def opt2_path(self):
+        #贪心初始化
+        path = self.nearest_neighbor_path()
+        count = 0
+        max_count = 5000
+        while count < max_count:
+            a = random.randint(0, self.length - 1)
+            b = random.randint(0, self.length - 1)
+            while abs(a - b) < 1:
+                b = random.randint(0, self.length - 1)
+            if a > b:
+                a, b = b, a
+            dis1, dis2 = self.compare_dis(a, b, path)
+            if dis2 >= dis1:
+                count += 1
+                continue
+            else:
+                count = 0
+                piece = path[a:b + 1]
+                piece.reverse()
+                path[a:b + 1] = piece
+        return path
+
+    def find(self, x: int,root):
+        r = x
+        # 找到x的根节点
+        while root[r] != r:
+            r = root[r]
+        i = x
+        # 路径压缩
+        while i != r:
+            tmp = root[i]
+            root[i] = r
+            i = tmp
+        return r
+
+    def join(self, x: int, y: int,root):
+        # 追溯到两个根节点
+        root1 = self.find(x,root)
+        root2 = self.find(y,root)
+        # 令其中一个根节点归属于另一个
+        root[root2] = root1
+
+    #获得一条最短链接路径
+    def short_connecting_path(self):
+        best_edges=[]
+        degrees = [0] * self.length
+        # distanceList按距离从小到大存储所有边
+        distanceList = []
+        for i in range(self.length):
+            for j in range(i):
+                distanceList.append([self.edges[i][j], i, j])
+        distanceList = sorted(distanceList, key=lambda x: x[0])
+        root = [0] * self.length
+        # 每个节点的根节点初始化为自己
+        for index in range(self.length):
+            root[index] = index
+        count = 0
+        for item in distanceList:
+            # 跳出条件
+            if count == self.length-1:
+                break
+            # 两点具有不同的根节点
+            if self.find(item[1],root) != self.find(item[2],root):
+                # 两点度均小于2
+                if degrees[item[1]] < 2 and degrees[item[2]] < 2:
+                    # 两点的度+=1
+                    degrees[item[1]] += 1
+                    degrees[item[2]] += 1
+                    # 计数加一
+                    count += 1
+                    # 将两点的根节点设置为相同
+                    self.join(item[1], item[2],root)
+                    best_edges.append([item[1],item[2]])
+
+        # 用于标记两个度为1的点
+        flag1 = flag2 = -1
+        for index in range(self.length):
+            if degrees[index] == 1:
+                # 度+=1
+                degrees[index] += 1
+                flag2 = flag1
+                flag1 = index
+                # 找到该两个点
+                if flag1 != -1 and flag2 != -1:
+                    break
+        #将得到的边转换成路径
+        path=[]
+        path.append(flag1)
+        cur_point = flag1
+        visit = [0 ]*(self.length-1)
+        while len(path) < self.length:
+            for i in range(len(best_edges)):
+                if visit[i]==0:
+                    edge = best_edges[i]
+                    if edge[0]==cur_point:
+                        path.append(edge[1])
+                        cur_point = edge[1]
+                        visit[i] = 1
+                        break
+                    elif edge[1]==cur_point:
+                        path.append(edge[0])
+                        cur_point = edge[0]
+                        visit[i] = 1
+                        break
+        return path
+
     # 初始化种群,贪心策略
     def init_pop(self):
         for i in range(self.POP_NUM):
-            # 随机初始化开始节点
-            cur_point = random.randint(0, self.length-1)
-            self.POPULATION[i][0] = cur_point
-            index = 1
-            # 访问标记
-            visit = [0 for m in range(self.length)]
-            visit[cur_point] = 1
-            while index < self.length:
-                next_p = self.get_nearest_neighbor(cur_point, visit)
-                self.POPULATION[i][index] = next_p
-                cur_point = next_p
-                visit[next_p] = 1
-                index += 1
+            if i < 0.1*self.POP_NUM:
+                 self.POPULATION[i] = self.short_connecting_path()
+            # else:
+            #     self.POPULATION[i] = self.nearest_neighbor_path()
+            else:
+                self.POPULATION[i] = self.opt2_path()
 
     # 得到路径path的距离
     def get_distance(self, path):
@@ -267,6 +403,7 @@ class GA(base.base):
     # 显示最优路径
     def show_beat_path(self, path):
         self.distance = self.get_distance(path)
+        # print(self.distance)
         self.setText('GA', self.time, self.distance)
         for i in range(len(path)-1):
             node1 = self.nodes[path[i]]
@@ -287,4 +424,5 @@ class GA(base.base):
             self.mutationover(i)
         best_path, best_p = self.get_best_individual(self.POPULATION)
         self.time = self.getTime()-before
+        # print(self.time)
         self.show_beat_path(best_path)

@@ -8,31 +8,56 @@ class opt(base.base):
         # 调用父类初始化函数
         super().__init__(nodeList, questionName)
         # 设置算法停止参数
-        self.max_count = 1000
-        # 随机选择一条路作为初始路径
-        self.path = [i for i in range(self.length)]
-        random.shuffle(self.path)
+        self.max_count = 5000
+        # 最优路径
+        self.path = []
+        self.init_path_nearest()
+
+
+    # 初始化种群,最近邻贪心策略
+    def init_path_nearest(self):
+        # 随机初始化开始节点
+        cur_point = random.randint(0, self.length-1)
+        self.path.append(cur_point)
+        index = 1
+        # 访问标记
+        visit = [0 for m in range(self.length)]
+        visit[cur_point] = 1
+        while index < self.length:
+            next_p = self.get_nearest_neighbor(cur_point, visit)
+            self.path.append(next_p)
+            cur_point = next_p
+            visit[next_p] = 1
+            index += 1
+
+    # 返回编号为n节点的最近节点,visit为各节点的访问记录
+    def get_nearest_neighbor(self, n, visit):
+        nearest_dis = float("inf")
+        for i in range(self.length):
+            if i != n and visit[i] == 0:
+                if self.edges[i][n] < nearest_dis:
+                    nearest_p = i
+                    nearest_dis = self.edges[i][n]
+        return nearest_p
 
     def update_beat_path(self):  # 更新最优路径
         count = 0
         while count < self.max_count:
-            repath = self.path.copy()
-            a = random.randint(0, self.length-1)
+            a = random.randint(0, self.length - 1)
             b = random.randint(0, self.length - 1)
-            while abs(a-b) < 1:
+            while abs(a - b) < 1:
                 b = random.randint(0, self.length - 1)
             if a > b:
-                dis1, dis2 = self.compare_dis(b, a)
-                repath[b:a+1] = self.trversePath(repath[b:a+1])
-            else:
-                dis1, dis2 = self.compare_dis(a, b)
-                repath[a:b+1] = self.trversePath(repath[a:b+1])
+                a, b = b, a
+            dis1, dis2 = self.compare_dis(a, b)
             if dis2 >= dis1:
                 count += 1
                 continue
             else:
                 count = 0
-                self.path = repath
+                piece = self.path[a:b + 1]
+                piece.reverse()
+                self.path[a:b + 1] = piece
 
     def compare_dis(self, i, j):  # 比较交换前后距离，由于只有与片段两旁节点与片段之间的距离会发生变化，故简单处理
         if i > 0 and j < len(self.path) - 1:
@@ -59,15 +84,13 @@ class opt(base.base):
             dis += self.edges[path[0]][path[n]]
         return dis
 
-    def trversePath(self, path):  # 列表反向排列
-        path.reverse()
-        return path
-
     def opt2(self):  # 2-opt求最优路径
         before = self.getTime()
         self.update_beat_path()
         self.time = self.getTime()-before
+        # print(self.time)
         self.distance = self.get_distance(self.path)
+        # print(self.distance)
         # print("最优路径:", self.path)
         for i in range(len(self.path)-1):
             node1 = self.nodes[self.path[i]]
